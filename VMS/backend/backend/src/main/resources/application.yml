@@ -1,0 +1,42 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: backend
+  datasource:
+    url: jdbc:postgresql://localhost:5432/app_db
+    username: app_user
+    password: app_password
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate   # schema is owned by Flyway migrations, not Hibernate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+app:
+  jwt:
+    # Replace in production - load from an env var / secrets manager, never commit a real secret
+    secret: ${JWT_SECRET:change-this-to-a-long-random-256-bit-secret-before-prod}
+    expiration-ms: 3600000 # 1 hour
+  storage:
+    base-dir: ${FILE_STORAGE_DIR:/data/app-storage} # on-prem mounted directory
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
